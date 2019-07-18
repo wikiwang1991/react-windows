@@ -1,5 +1,5 @@
 {
-  "name": "react-windows",
+  "name": "react-windows-component",
   "version": "1.0.0",
   "description": "React components for rendering windows",
   "files": [
@@ -28,12 +28,12 @@
   },
   "repository": {
     "type": "git",
-    "url": "git+ssh://git@github.com/wikiwang1991/react-windows.git"
+    "url": "git+ssh://git@github.com/wikiwang1991/react-windows-component.git"
   },
   "author": "Wiki Wang <wikiwang@live.com> (https://wikiwang.net)",
   "license": "MIT",
   "bugs": {
-    "url": "https://github.com/wikiwang1991/react-windows/issues"
+    "url": "https://github.com/wikiwang1991/react-windows-component/issues"
   },
-  "homepage": "https://github.com/wikiwang1991/react-windows#readme"
+  "homepage": "https://github.com/wikiwang1991/react-windows-component#readme"
 }
