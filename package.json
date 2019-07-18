@@ -1,0 +1,41 @@
+{
+  "name": "react-windows",
+  "version": "1.0.0",
+  "description": "React components for rendering windows",
+  "files": [
+    "LICENSE",
+    "README.md",
+    "dist/"
+  ],
+  "main": "dist/windows.cjs.js",
+  "module": "dist/windows.esm.js",
+  "dependencies": {},
+  "peerDependencies": {
+    "react": ">= 16.8.0",
+    "react-jss": "^10.0.0-alpha.22"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.5.5",
+    "@babel/plugin-proposal-class-properties": "^7.5.5",
+    "@babel/preset-env": "^7.5.5",
+    "@babel/preset-react": "^7.0.0",
+    "rollup": "^1.17.0",
+    "rollup-plugin-babel": "^4.3.3",
+    "rollup-plugin-commonjs": "^10.0.1",
+    "rollup-plugin-node-resolve": "^5.2.0",
+    "rollup-plugin-terser": "^5.1.1"
+  },
+  "scripts": {
+    "build": "rollup -c"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+ssh://git@github.com/wikiwang1991/react-windows.git"
+  },
+  "author": "Wiki Wang <wikiwang@live.com> (https://wikiwang.net)",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/wikiwang1991/react-windows/issues"
+  },
+  "homepage": "https://github.com/wikiwang1991/react-windows#readme"
+}
