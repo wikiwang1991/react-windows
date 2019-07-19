@@ -101,6 +101,7 @@ const styles = {
 }
 
 export const Action = {
+	focus:		0,
 	move:     1,
 	resizeE:  2,
 	resizeN:  3,
@@ -206,27 +207,27 @@ class Window extends React.Component {
 		let style = {
 			left: this.props.x,
 			top: this.props.y,
-			width: this.props.w,
-			height: this.props.h,
+			width: this.props.width,
+			height: this.props.height,
 			zIndex: this.props.z,
 			borderWidth: isNaN(scale) || !isFinite(scale) ? 0 : scale,
 		}
 
 		const controls = []
 		if (this.props.movable)
-			controls.push(<div key='move' className={classes.move} onMouseDown={this.onMove} />)
+			controls.push(<div key='q' className={classes.move} onMouseDown={this.onMove} />)
 		if (this.props.resizable) {
-			controls.push(<div key='resizeE' className={classes.resizeE} onMouseDown={this.onResizeE} />)
-			controls.push(<div key='resizeN' className={classes.resizeN} onMouseDown={this.onResizeN} />)
-			controls.push(<div key='resizeNE' className={classes.resizeNE} onMouseDown={this.onResizeNE} />)
-			controls.push(<div key='resizeNW' className={classes.resizeNW} onMouseDown={this.onResizeNW} />)
-			controls.push(<div key='resizeS' className={classes.resizeS} onMouseDown={this.onResizeS} />)
-			controls.push(<div key='resizeSE' className={classes.resizeSE} onMouseDown={this.onResizeSE} />)
-			controls.push(<div key='resizeSW' className={classes.resizeSW} onMouseDown={this.onResizeSW} />)
-			controls.push(<div key='resizeW' className={classes.resizeW} onMouseDown={this.onResizeW} />)
+			controls.push(<div key='u' className={classes.resizeE} onMouseDown={this.onResizeE} />)
+			controls.push(<div key='i' className={classes.resizeN} onMouseDown={this.onResizeN} />)
+			controls.push(<div key='c' className={classes.resizeNE} onMouseDown={this.onResizeNE} />)
+			controls.push(<div key='k' className={classes.resizeNW} onMouseDown={this.onResizeNW} />)
+			controls.push(<div key='f' className={classes.resizeS} onMouseDown={this.onResizeS} />)
+			controls.push(<div key='o' className={classes.resizeSE} onMouseDown={this.onResizeSE} />)
+			controls.push(<div key='x' className={classes.resizeSW} onMouseDown={this.onResizeSW} />)
+			controls.push(<div key='j' className={classes.resizeW} onMouseDown={this.onResizeW} />)
 		}
 		if (this.props.title)
-			controls.push(<div key='title' className={classes.title} style={{
+			controls.push(<div key='u' className={classes.title} style={{
 				transform: 'scale('+scale+','+scale+')'
 			}}>{this.props.title}</div>)
 
