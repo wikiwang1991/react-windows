@@ -192,9 +192,10 @@ class Window extends React.Component {
 			this.props.onDrop(event, this.props.id)
 	}
 
-	onFocus = () => {
+	onFocus = event => {
 		if (this.props.onSelect)
 			this.props.onSelect(this.props.id)
+		this.props.onEvent(this, Action.focus, event)
 	}
 
 	blur = () => {
@@ -207,9 +208,8 @@ class Window extends React.Component {
 		let style = {
 			left: this.props.x,
 			top: this.props.y,
-			width: this.props.width,
-			height: this.props.height,
-			zIndex: this.props.z,
+			width: this.props.w,
+			height: this.props.h,
 			borderWidth: isNaN(scale) || !isFinite(scale) ? 0 : scale,
 		}
 
@@ -241,7 +241,7 @@ class Window extends React.Component {
 			style={style} onDrop={this.onDrop}
 			onMouseDown={this.onMouseDown} onMouseLeave={this.onMouseLeave}
 			onMouseUp={this.onMouseUp} onDragOver={this.onDragOver}
-			tabIndex={this.props.id} onFocus={this.onFocus}
+			tabIndex={this.props.tabIndex} onFocus={this.onFocus}
 			onKeyUp={this.props.onKeyUp}>
 			{controls}{this.props.children}
 		</div>
@@ -329,13 +329,12 @@ class WindowsComponent extends React.Component {
 			} else this.setState({x: event.clientX - this.x, y: event.clientY - this.y})
 			break
 		default:
-			if (this.focus) {
+			if (this.focus)
 				this.props.onWindowResize({
 					window: this.focus.props.id, action: this.action,
 					x: (event.clientX - this.x) / this.state.scale,
 					y: (event.clientY - this.y) / this.state.scale,
 				})
-			}
 			break
 		}
 	}
@@ -425,19 +424,20 @@ class WindowsComponent extends React.Component {
 			<div className={classes.windows} ref={this.container}
 				onWheel={this.props.scalable ? this.onWheel : undefined}
 				onMouseDown={this.onMouseDown} onMouseMove={this.onMouseMove}
-				onMouseUp={this.onMouseUp} onMouseLeave={this.onMouseUp}>
+				onMouseUp={this.onMouseUp} onMouseLeave={this.onMouseUp}
+				style={this.props.style}>
 				<div className={classes.view} style={{
 					position: 'absolute',
 					left: `calc((100% - ${this.props.width}px) / 2 + ${this.state.x}px)`,
 					top: `calc((100% - ${this.props.height}px) / 2 + ${this.state.y}px)`,
 					width: this.props.width, height: this.props.height,
 					transform: 'scale('+this.state.scale+','+this.state.scale+')',
-					...this.props.style,
+					...this.props.innerStyle,
 				}}>
 					{this.props.grid && <canvas ref={this.canvas} width={this.props.width} height={this.props.height} />}
 					{children}
 				</div>
-				{this.props.attachment}
+				{this.props.cover}
 			</div>
 		)
 	}

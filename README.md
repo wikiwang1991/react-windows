@@ -11,14 +11,14 @@
 ## Usage
 
 ```jsx
-<Windows>
-  <Window style={{left: 30, top: 0, width: 60, height: 60}}>
+<Windows}>
+  <Window style={{x: 30, y: 0, w: 60, h: 60}}>
     1
   </Window>
-  <Window style={{left: 0, top: 60, width: 60, height: 60}}>
+  <Window style={{x: 0, y: 60, w: 60, h: 60}}>
     2
   </Window>
-  <Window style={{left: 60, top: 60, width: 60, height: 60}}>
+  <Window style={{x: 60, y: 60, w: 60, h: 60}}>
     3
   </Window>
 </Windows>
@@ -30,6 +30,10 @@
 
 | Property | Description | Type | Default |
 | - | - | - | - |
+| x | | `number` | |
+| y | | `number` | |
+| w | | `number` | |
+| h | | `number` | |
 | movable | | `boolean` | `false` |
 | resizable | | `boolean` | `false` |
 
@@ -41,13 +45,5 @@
 | scalable | | `boolean` | `false` |
 | width | | `number` | `120` |
 | height | | `number` | `120` |
-| x | | `number` | `0` |
-| y | | `number` | `0` |
-| scale | | `number` | |
-| onScale | | `function({scale})` | |
-| onMove | | `function({x, y})` | |
-| onFocus | | `function({key})` | |
-| onBlur | | `function({key})` | |
-| onWindowChange | | `function({key, left, top, width, height})` | |
-| innerStyle | | `CSSStyleDeclaration` | |
+| innerStyle | | `CSSProperties` | |
 | cover | | `React.ReactNode` | |
