@@ -355,7 +355,10 @@ class WindowsComponent extends React.Component {
 	}
 
 	renderGrid = () => {
-		const ctx = this.canvas.current.getContext('2d')
+		const canvas = this.canvas.current
+		const ctx = canvas.getContext('2d')
+
+		ctx.clearRect(0, 0, canvas.width, canvas.height)
 
 		ctx.lineWidth = 1
 		ctx.strokeStyle = '#8a8a8c80'
@@ -383,6 +386,8 @@ class WindowsComponent extends React.Component {
 	}
 
 	componentDidUpdate() {
+		if (this.props.grid) this.renderGrid()
+
 		if (this.props.scalable &&
 			(!this.state.initRender || !this.container.current))
 			return
@@ -397,7 +402,6 @@ class WindowsComponent extends React.Component {
 
 		if (scale === this.state.scale) return
 
-		if (this.props.grid) this.renderGrid()
 		setTimeout(() => {
 			this.setState({scale: scale, initRender: false})
 			if (this.props.onScale) this.props.onScale(scale)
