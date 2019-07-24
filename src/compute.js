@@ -1,23 +1,10 @@
 export const computeActualLength = (exp, total) => {
 	switch (typeof exp) {
-	case 'string':
-		return eval(exp) * total
-	case 'number':
-		return exp * total
+	case 'string': {
+		const eval1 = eval
+		return eval1(exp) * total
+	} case 'number':
+		if (exp > 1 || exp < -1) return exp
+		else return exp * total
 	}
-}
-
-export const numberToString = (value, size) => {
-	let str = value.toString()
-	if (str.length < size) str = '0' + str
-	return str
-}
-
-export const secondsToString = (seconds) => {
-	const minutes = Math.floor(seconds / 60)
-	const hours = Math.floor(minutes / 60)
-
-	return numberToString(hours, 2) + ':' +
-		numberToString(minutes % 60, 2) + ':' +
-		numberToString(seconds % 60, 2)
 }

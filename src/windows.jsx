@@ -1,6 +1,5 @@
 import React from 'react'
 import withStyles from 'react-jss'
-
 import * as Compute from './compute.js'
 
 const lineHWidth = 10
@@ -100,7 +99,7 @@ const styles = {
 	},
 }
 
-export const Action = {
+const Action = {
 	focus:		0,
 	move:     1,
 	resizeE:  2,
@@ -172,7 +171,7 @@ class Window extends React.Component {
 	onMouseUp = event => {
 		if (this.mouseDown) {
 			if (!event.target.onclick &&
-				this.props.onSelect &&
+				this.props.tabIndex &&
 				this.x === event.clientX &&
 				this.y === event.clientY)
 				this.ref.current.focus()
@@ -261,33 +260,44 @@ class WindowsComponent extends React.Component {
 		}
   }
 
+	scale = () => {return this.props.scale ? this.props.scale : this.state.scale}	
+
 	onWheel = e => {
 		if (!this.props.scalable) return
-		const oldScale = this.state.scale
+		const oldScale = this.scale()
 		const newScale = oldScale - e.deltaY / 10000
 		if (newScale < 0) return
+		if (this.props.onScale) this.props.onScale(newScale)
+		if (this.props.scale) return
 		const div = newScale / oldScale
 		const x = this.state.x * div
 		const y = this.state.y * div
 		this.setState({scale: newScale, initRender: false, x: x, y: y})
-		if (this.props.onScale) this.props.onScale(newScale)
 	}
 
 	onEvent = (window, action, event) => {
 		this.action = action
 		this.focus = window
 
+		if (this.action === Action.focus) {
+			if (this.props.onFocus)
+				this.props.onFocus({key: window.props.eventKey})
+			return
+		}
+
+		const scale = this.scale()
+
 		switch (action) {
 		case Action.move:
 		case Action.resizeNW:
 		case Action.resizeW:
 		case Action.resizeSW:
-			this.x = event.clientX - window.props.x * this.state.scale
+			this.x = event.clientX - window.props.x * scale
 			break
 		case Action.resizeE:
 		case Action.resizeNE:
 		case Action.resizeSE:
-			this.x = event.clientX - (window.props.x + window.props.w) * this.state.scale
+			this.x = event.clientX - (window.props.x + window.props.w) * scale
 			break
 		}
 
@@ -296,12 +306,12 @@ class WindowsComponent extends React.Component {
 		case Action.resizeN:
 		case Action.resizeNE:
 		case Action.resizeNW:
-			this.y = event.clientY - window.props.y * this.state.scale
+			this.y = event.clientY - window.props.y * scale
 			break
 		case Action.resizeS:
 		case Action.resizeSE:
 		case Action.resizeSW:
-			this.y = event.clientY - (window.props.y + window.props.h) * this.state.scale
+			this.y = event.clientY - (window.props.y + window.props.h) * scale
 			break
 		}
 
@@ -317,23 +327,22 @@ class WindowsComponent extends React.Component {
 	}
 
 	onMouseMove = event => {
+		const scale = this.scale()
 		switch (this.action) {
 		case null: break
 		case Action.move:
-			if (this.focus) {
-				if (this.props.onWindowMove)
-					this.props.onWindowMove({window: this.focus.props.id,
-						x: (event.clientX - this.x) / this.state.scale,
-						y: (event.clientY - this.y) / this.state.scale,
-					})
-			} else this.setState({x: event.clientX - this.x, y: event.clientY - this.y})
+			if (this.focus)
+				this.onWindowChange({
+					tx: (event.clientX - this.x) / scale,
+					ty: (event.clientY - this.y) / scale,
+				})
+			else this.setState({x: event.clientX - this.x, y: event.clientY - this.y})
 			break
 		default:
 			if (this.focus)
-				this.props.onWindowResize({
-					window: this.focus.props.id, action: this.action,
-					x: (event.clientX - this.x) / this.state.scale,
-					y: (event.clientY - this.y) / this.state.scale,
+				this.onWindowChange({
+					tx: (event.clientX - this.x) / scale,
+					ty: (event.clientY - this.y) / scale,
 				})
 			break
 		}
@@ -345,13 +354,92 @@ class WindowsComponent extends React.Component {
 			if (!event.target.onclick &&
 				this.action === Action.move && this.focus) {
 				const window = this.focus
+				const scale = this.scale()
 				if (window.props.onSelect &&
-					this.x === event.clientX - window.props.x * this.state.scale &&
-					this.y === event.clientY - window.props.y * this.state.scale)
+					this.x === event.clientX - window.props.x * scale &&
+					this.y === event.clientY - window.props.y * scale)
 					window.props.onSelect(window.props.id)
 			}
 			this.action = null
 		}
+	}
+
+  onWindowChange = ({tx, ty}) => {
+		if (!this.props.onChange) return
+
+		const width = this.props.width
+		const height = this.props.height
+		const rect = {
+			x: this.focus.props.x, y: this.focus.props.y,
+			w: this.focus.props.w, h: this.focus.props.h,
+		}
+		const x = Compute.computeActualLength(rect.x, width)
+		const y = Compute.computeActualLength(rect.y, height)
+		const w = Compute.computeActualLength(rect.w, width)
+		const h = Compute.computeActualLength(rect.h, height)
+
+		switch (this.action) {
+		case Action.move:
+			rect.x = this.magnetize(tx, width)
+			rect.y = this.magnetize(ty, height)
+			break
+		case Action.resizeE: {
+			const nw = this.magnetize(tx - x, width)
+			if (typeof nw === 'string' || nw > 0) rect.w = nw
+			break
+		} case Action.resizeN: {
+			const ny = this.magnetize(ty, height)
+			const nh = this.magnetize(y + h - Compute.computeActualLength(ny, height), height, 1)
+			if (typeof nh === 'string' || nh > 0) {rect.y = ny; rect.h = nh}
+			break
+		} case Action.resizeNE: {
+			const nw = this.magnetize(tx - x, width)
+			const ny = this.magnetize(ty, height)
+			const nh = this.magnetize(y + h - Compute.computeActualLength(ny, height), height, 1)
+			if ((typeof nw === 'string' || nw > 0) && (typeof nh === 'string' || nh > 0)) {
+				rect.w = nw; rect.y = ny; rect.h = nh
+			}
+			break
+		} case Action.resizeNW: {
+			const nx = this.magnetize(tx, width)
+			const nw = this.magnetize(x + w - Compute.computeActualLength(nx, width), width, 1)
+			const ny = this.magnetize(ty, height)
+			const nh = this.magnetize(y + h - Compute.computeActualLength(ny, height), height, 1)
+			if ((typeof nw === 'string' || nw > 0) && (typeof nh === 'string' || nh > 0)) {
+				rect.x = nx; rect.w = nw; rect.y = ny; rect.h = nh
+			}
+			break
+		} case Action.resizeS: {
+			const nh = this.magnetize(ty - y, height)
+			if (typeof nh === 'string' || nh > 0) rect.h = nh
+			break
+		} case Action.resizeSE: {
+			const nw = this.magnetize(tx - x, width)
+			const nh = this.magnetize(ty - y, height)
+			if ((typeof nw === 'string' || nw > 0) && (typeof nh === 'string' || nh > 0)) {
+				rect.w = nw; rect.h = nh
+			}
+			break
+		} case Action.resizeSW: {
+			const nx = this.magnetize(tx, width)
+			const nw = this.magnetize(x + w - Compute.computeActualLength(nx, width), width, 1)
+			const nh = this.magnetize(ty - y, height)
+			if ((typeof nw === 'string' || nw > 0) && (typeof nh === 'string' || nh > 0)) {
+				rect.x = nx; rect.w = nw; rect.h = nh
+			}
+			break
+		} case Action.resizeW: {
+			const nx = this.magnetize(tx, width)
+			const nw = this.magnetize(x + w - Compute.computeActualLength(nx, width), width, 1)
+			if (typeof nw === 'string' || nw > 0) {rect.x = nx; rect.w = nw}
+			break
+		}
+		}
+
+		console.log(x, y, w, h)
+
+		this.props.onChange({key: this.focus.props.eventKey,
+			x: rect.x, y: rect.y, w: rect.w, h: rect.h})
 	}
 
 	renderGrid = () => {
@@ -389,7 +477,8 @@ class WindowsComponent extends React.Component {
 		if (this.props.grid) this.renderGrid()
 
 		if (this.props.scalable &&
-			(!this.state.initRender || !this.container.current))
+			(this.props.scale ||
+				!this.state.initRender || !this.container.current))
 			return
 
 		const { clientWidth, clientHeight } = this.container.current
@@ -408,6 +497,27 @@ class WindowsComponent extends React.Component {
 		}, 0)
 	}
 	
+	magnetize = (value, total, precision) => {
+		const magnet = this.props.magnet
+		if (!precision) precision = total / (magnet.length >> 1)
+		let min = 0, max = magnet.length - 1
+		let i = Math.round(value * max / total)
+		if (i <= max && i >= min) {
+			while (i <= max && i >= min) {
+				const m = magnet[i]
+				const mv = Compute.computeActualLength(m, total)
+				const diff = value - mv
+				if (Math.abs(diff) < precision) return m
+				else {
+					if (diff > 0) ++i
+					else --i
+				}
+			}
+		}
+		if (value > 1 || value < -1) return value
+		else return value / total
+	}
+
 	static getDerivedStateFromProps(props, state) {
 		if (props.width != state.width || props.height != state.height)
 			return {initRender: true, width: props.width, height: props.height}
@@ -415,12 +525,19 @@ class WindowsComponent extends React.Component {
 	}
 
 	render() {
-		const { classes } = this.props
+		const { classes, width, height } = this.props
 
-		const antiScale = 1 / this.state.scale
+		const scale = this.scale()
+
+		const antiScale = 1 / scale
 		const children = React.Children.map(this.props.children, child =>
       React.cloneElement(child, {
 				classes: classes, onEvent: this.onEvent, scale: antiScale,
+				x: Compute.computeActualLength(child.props.x, width),
+				y: Compute.computeActualLength(child.props.y, height),
+				w: Compute.computeActualLength(child.props.w, width),
+				h: Compute.computeActualLength(child.props.h, height),
+				eventKey: child.key,
 			})
     )
 
@@ -430,14 +547,16 @@ class WindowsComponent extends React.Component {
 				onMouseDown={this.onMouseDown} onMouseMove={this.onMouseMove}
 				onMouseUp={this.onMouseUp} onMouseLeave={this.onMouseUp}
 				style={this.props.style}>
-				<div className={classes.view} style={{
-					position: 'absolute',
-					left: `calc((100% - ${this.props.width}px) / 2 + ${this.state.x}px)`,
-					top: `calc((100% - ${this.props.height}px) / 2 + ${this.state.y}px)`,
-					width: this.props.width, height: this.props.height,
-					transform: 'scale('+this.state.scale+','+this.state.scale+')',
-					...this.props.innerStyle,
-				}}>
+				<div className={classes.view} onBlur={this.props.onBlur}
+					style={{
+						position: 'absolute',
+						left: `calc((100% - ${this.props.width}px) / 2 + ${this.state.x}px)`,
+						top: `calc((100% - ${this.props.height}px) / 2 + ${this.state.y}px)`,
+						width: this.props.width, height: this.props.height,
+						transform: 'scale('+scale+','+scale+')',
+						...this.props.innerStyle,
+					}}
+				>
 					{this.props.grid && <canvas ref={this.canvas} width={this.props.width} height={this.props.height} />}
 					{children}
 				</div>
@@ -447,13 +566,30 @@ class WindowsComponent extends React.Component {
 	}
 }
 
-Window.defaultProps = {
-	x: 0, y: 0, w: 0, h: 0, z: 0,
-	visible: true, movable: false, resizable: false, onSelect: null,
-}
-
 WindowsComponent.defaultProps = {
-	onWindowMove: null,
+	width: 120, height: 120,
+	magnet: [
+		0, '1/120', '1/60', 0.025, '1/30', '1/24',
+		0.05, '7/120', '1/15', 0.075, '1/12', '11/120',
+		0.1, '13/120', '7/60', 0.125, '2/15', '17/120',
+		0.15, '19/120', '1/6', 0.175, '11/60', '23/120',
+		0.2, '5/24', '13/60', 0.225, '7/30', '29/120',
+		0.25, '31/120', '4/15', 0.275, '17/60', '7/24',
+		0.3, '37/120', '19/60', 0.325, '1/3', '41/120',
+		0.35, '43/120', '11/30', 0.375, '23/60', '47/120',
+		0.4, '49/120', '5/12', 0.425, '13/30', '53/120',
+		0.45, '11/24', '7/15', 0.475, '29/60', '59/120',
+		0.5, '61/120', '31/60', 0.525, '8/15', '13/24',
+		0.55, '67/120', '17/30', 0.575, '7/12', '71/120',
+		0.6, '73/120', '37/60', 0.625, '19/30', '77/120',
+		0.65, '79/120', '2/3', 0.675, '41/60', '83/120',
+		0.7, '17/24', '43/60', 0.725, '11/15', '89/120',
+		0.75, '91/120', '23/30', 0.775, '47/60', '19/24',
+		0.8, '97/120', '49/60', 0.825, '5/6', '101/120',
+		0.85, '103/120', '13/15', 0.875, '53/60', '107/120',
+		0.9, '109/120', '11/12', 0.925, '14/15', '113/120',
+		0.95, '23/24', '29/30', 0.975, '59/60', '119/120', 1
+	],
 }
 
 const Windows = withStyles(styles)(WindowsComponent)

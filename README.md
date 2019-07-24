@@ -11,14 +11,14 @@
 ## Usage
 
 ```jsx
-<Windows}>
-  <Window style={{x: 30, y: 0, w: 60, h: 60}}>
+<Windows>
+  <Window x={30} y={0} w={60} h={60}>
     1
   </Window>
-  <Window style={{x: 0, y: 60, w: 60, h: 60}}>
+  <Window x={0} y={0.5} w={0.5} h={0.5}>
     2
   </Window>
-  <Window style={{x: 60, y: 60, w: 60, h: 60}}>
+  <Window x='1/2' y='1/2' w='1/2' h='1/2'>
     3
   </Window>
 </Windows>
@@ -47,3 +47,8 @@
 | height | | `number` | `120` |
 | innerStyle | | `CSSProperties` | |
 | cover | | `React.ReactNode` | |
+| scale | | `number` | |
+| onFocus | | `function({key})` | |
+| onBlur | | `function()` | |
+| onChange | | `function({key, x, y, w, h})` | |
+| magnet | | `[var]` | |
