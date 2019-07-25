@@ -325,23 +325,21 @@ class WindowsComponent extends React.Component {
 	}
 
 	onMouseMove = event => {
-		const scale = this.scale()
 		switch (this.action) {
-		case null: break
-		case Action.move:
-			if (this.focus)
-				this.onWindowChange({
-					tx: (event.clientX - this.x) / scale,
-					ty: (event.clientY - this.y) / scale,
-				})
-			else this.setState({x: event.clientX - this.x, y: event.clientY - this.y})
+		case null:
+		case Action.focus:
 			break
 		default:
-			if (this.focus)
-				this.onWindowChange({
-					tx: (event.clientX - this.x) / scale,
-					ty: (event.clientY - this.y) / scale,
-				})
+			if (this.focus) {
+				if (this.props.onChange) {
+					const scale = this.scale()
+					this.onWindowChange({
+						tx: (event.clientX - this.x) / scale,
+						ty: (event.clientY - this.y) / scale,
+					})
+				}
+			} else if (this.action === Action.move)
+				this.setState({x: event.clientX - this.x, y: event.clientY - this.y})
 			break
 		}
 	}
@@ -352,8 +350,6 @@ class WindowsComponent extends React.Component {
 	}
 
   onWindowChange = ({tx, ty}) => {
-		if (!this.action || !this.props.onChange) return
-
 		const width = this.props.width
 		const height = this.props.height
 		const rect = {
