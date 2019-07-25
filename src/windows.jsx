@@ -352,7 +352,7 @@ class WindowsComponent extends React.Component {
 	}
 
   onWindowChange = ({tx, ty}) => {
-		if (!this.props.onChange) return
+		if (!this.action || !this.props.onChange) return
 
 		const width = this.props.width
 		const height = this.props.height
