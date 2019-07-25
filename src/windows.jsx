@@ -192,8 +192,6 @@ class Window extends React.Component {
 	}
 
 	onFocus = event => {
-		if (this.props.onSelect)
-			this.props.onSelect(this.props.id)
 		this.props.onEvent(this, Action.focus, event)
 	}
 
@@ -348,20 +346,9 @@ class WindowsComponent extends React.Component {
 		}
 	}
 
-	onMouseUp = event => {
-		if (this.action) {
-			// ugly fix
-			if (!event.target.onclick &&
-				this.action === Action.move && this.focus) {
-				const window = this.focus
-				const scale = this.scale()
-				if (window.props.onSelect &&
-					this.x === event.clientX - window.props.x * scale &&
-					this.y === event.clientY - window.props.y * scale)
-					window.props.onSelect(window.props.id)
-			}
+	onMouseUp = () => {
+		if (this.action)
 			this.action = null
-		}
 	}
 
   onWindowChange = ({tx, ty}) => {
@@ -435,8 +422,6 @@ class WindowsComponent extends React.Component {
 			break
 		}
 		}
-
-		console.log(x, y, w, h)
 
 		this.props.onChange({key: this.focus.props.eventKey,
 			x: rect.x, y: rect.y, w: rect.w, h: rect.h})
@@ -514,7 +499,7 @@ class WindowsComponent extends React.Component {
 				}
 			}
 		}
-		if (value > 1 || value < -1) return value
+		if (value > total || value < 0) return value
 		else return value / total
 	}
 

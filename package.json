@@ -1,6 +1,6 @@
 {
   "name": "react-windows-component",
-  "version": "1.0.0-alpha.5",
+  "version": "1.0.0-alpha.6",
   "description": "React components for rendering windows",
   "files": [
     "LICENSE",
@@ -43,5 +43,9 @@
   "bugs": {
     "url": "https://github.com/wikiwang1991/react-windows-component/issues"
   },
-  "homepage": "https://github.com/wikiwang1991/react-windows-component#readme"
+  "homepage": "https://github.com/wikiwang1991/react-windows-component#readme",
+  "keywords": [
+    "react",
+    "window"
+  ]
 }
