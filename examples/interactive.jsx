@@ -29,7 +29,13 @@ export default Interactive = () => {
         if (id === key) newWindows[id] = {x: x, y: y, w: w, h: h}
         else newWindows[id] = {...windows[id]}
       setWindows(newWindows)
-    }}>
+    }}
+    cover={focus && <div>
+      <div>{windows[focus].x}</div>
+      <div>{windows[focus].y}</div>
+      <div>{windows[focus].w}</div>
+      <div>{windows[focus].h}</div>
+    </div>}>
     {children}
   </Windows>
 }

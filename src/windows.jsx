@@ -203,10 +203,10 @@ class Window extends React.Component {
 		const { classes, scale } = this.props
 
 		let style = {
-			left: this.props.x,
-			top: this.props.y,
-			width: this.props.w,
-			height: this.props.h,
+			left: this.props.ax,
+			top: this.props.ay,
+			width: this.props.aw,
+			height: this.props.ah,
 			borderWidth: isNaN(scale) || !isFinite(scale) ? 0 : scale,
 		}
 
@@ -290,12 +290,12 @@ class WindowsComponent extends React.Component {
 		case Action.resizeNW:
 		case Action.resizeW:
 		case Action.resizeSW:
-			this.x = event.clientX - window.props.x * scale
+			this.x = event.clientX - window.props.ax * scale
 			break
 		case Action.resizeE:
 		case Action.resizeNE:
 		case Action.resizeSE:
-			this.x = event.clientX - (window.props.x + window.props.w) * scale
+			this.x = event.clientX - (window.props.ax + window.props.aw) * scale
 			break
 		}
 
@@ -304,12 +304,12 @@ class WindowsComponent extends React.Component {
 		case Action.resizeN:
 		case Action.resizeNE:
 		case Action.resizeNW:
-			this.y = event.clientY - window.props.y * scale
+			this.y = event.clientY - window.props.ay * scale
 			break
 		case Action.resizeS:
 		case Action.resizeSE:
 		case Action.resizeSW:
-			this.y = event.clientY - (window.props.y + window.props.h) * scale
+			this.y = event.clientY - (window.props.ay + window.props.ah) * scale
 			break
 		}
 
@@ -514,10 +514,14 @@ class WindowsComponent extends React.Component {
 		const children = React.Children.map(this.props.children, child =>
       React.cloneElement(child, {
 				classes: classes, onEvent: this.onEvent, scale: antiScale,
-				x: Compute.computeActualLength(child.props.x, width),
-				y: Compute.computeActualLength(child.props.y, height),
-				w: Compute.computeActualLength(child.props.w, width),
-				h: Compute.computeActualLength(child.props.h, height),
+				x: child.props.x,
+				y: child.props.y,
+				w: child.props.w,
+				h: child.props.h,
+				ax: Compute.computeActualLength(child.props.x, width),
+				ay: Compute.computeActualLength(child.props.y, height),
+				aw: Compute.computeActualLength(child.props.w, width),
+				ah: Compute.computeActualLength(child.props.h, height),
 				eventKey: child.key,
 			})
     )
