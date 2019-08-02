@@ -1,6 +1,6 @@
 {
   "name": "react-windows-component",
-  "version": "1.0.0-alpha.8",
+  "version": "1.0.0-alpha.9",
   "description": "React components for rendering windows",
   "files": [
     "LICENSE",
