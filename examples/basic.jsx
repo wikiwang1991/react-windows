@@ -1,5 +1,5 @@
 import React from 'react'
-import {Windows, Window} from '../src/windows.jsx'
+import {Windows, Window} from 'react-windows-component'
 
 export default Basic = () => {
   return <Windows style={{width: 480, height: 270, border: '1px solid gray'}}>

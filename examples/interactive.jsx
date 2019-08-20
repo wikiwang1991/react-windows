@@ -1,6 +1,5 @@
 import React, { useState } from 'react'
-import {Windows, Window} from '../src/windows.jsx'
-// import {Windows, Window} from '../dist/windows.esm.js'
+import {Windows, Window} from 'react-windows-component'
 
 export default Interactive = () => {
   const [windows, setWindows] = useState({

@@ -4,15 +4,19 @@ import commonjs from 'rollup-plugin-commonjs'
 import babel from 'rollup-plugin-babel'
 import serve from 'rollup-plugin-serve'
 import livereload from 'rollup-plugin-livereload'
+import alias from 'rollup-plugin-alias'
 
 export default {
   input: 'examples/index.jsx',
   output: {
-    file: 'examples/dist/main.js',
+    dir: 'examples/dist',
     format: 'cjs',
     sourcemap: true,
   },
   plugins: [
+    alias({
+      'react-windows-component': 'src/windows.jsx'
+    }),
     replace({
       'process.env.NODE_ENV': JSON.stringify('production'),
     }),
@@ -33,6 +37,6 @@ export default {
     livereload('examples'),
   ],
   watch: {
-    include: ['examples/*.jsx', 'src/**'],
+    include: ['examples/**', 'src/**'],
   },
 }

@@ -248,7 +248,7 @@ class Window extends React.Component {
 class WindowsComponent extends React.Component {
 	constructor(props) {
 		super(props)
-		this.container = React.createRef()
+		this.container = props.outerRef ? props.outerRef : React.createRef()
 		this.canvas = React.createRef()
 		this.action = 0
 		this.focus = null
@@ -331,7 +331,7 @@ class WindowsComponent extends React.Component {
 			break
 		default:
 			if (this.focus) {
-				if (this.props.onChange) {
+				if (this.props.onWindowChange) {
 					const scale = this.scale()
 					this.onWindowChange({
 						tx: (event.clientX - this.x) / scale,
@@ -419,7 +419,7 @@ class WindowsComponent extends React.Component {
 		}
 		}
 
-		this.props.onChange({key: this.focus.props.eventKey,
+		this.props.onWindowChange({key: this.focus.props.eventKey,
 			x: rect.x, y: rect.y, w: rect.w, h: rect.h})
 	}
 
@@ -472,10 +472,8 @@ class WindowsComponent extends React.Component {
 
 		if (scale === this.state.scale) return
 
-		setTimeout(() => {
-			this.setState({scale: scale, initRender: false})
-			if (this.props.onScale) this.props.onScale(scale)
-		}, 0)
+		this.setState({scale: scale, initRender: false})
+		if (this.props.onScale) this.props.onScale(scale)
 	}
 	
 	magnetize = (value, total, precision) => {
@@ -514,10 +512,8 @@ class WindowsComponent extends React.Component {
 		const children = React.Children.map(this.props.children, child =>
       React.cloneElement(child, {
 				classes: classes, onEvent: this.onEvent, scale: antiScale,
-				x: child.props.x,
-				y: child.props.y,
-				w: child.props.w,
-				h: child.props.h,
+				x: child.props.x, y: child.props.y,
+				w: child.props.w, h: child.props.h,
 				ax: Compute.computeActualLength(child.props.x, width),
 				ay: Compute.computeActualLength(child.props.y, height),
 				aw: Compute.computeActualLength(child.props.w, width),
