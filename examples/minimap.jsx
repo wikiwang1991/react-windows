@@ -13,8 +13,8 @@ export default Minimap = () => {
   const [vpRect, setVpRect] = useState({x: 0, y: 0, w: 1, h: 1})
   const [scale, setScale] = useState()
 
-  return <div style={{display: 'flex'}}>
-    <Windows style={{width: 480, height: 270, border: '1px solid gray'}}
+  return <div style={{display: 'flex', width: '100%', height: 'calc(100vh - 50px)'}}>
+    <Windows style={{width: '50%', height: '50%', border: '1px solid gray'}}
       movable scalable outerRef={ref} onScale={scale => setScale(scale)}
       cover={scale}>
       {content}

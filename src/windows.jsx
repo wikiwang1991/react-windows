@@ -200,14 +200,14 @@ class Window extends React.Component {
 	}
 
 	render() {
-		const { classes, scale } = this.props
+		const { classes, scale, antiScale } = this.props
 
 		let style = {
 			left: this.props.ax,
 			top: this.props.ay,
 			width: this.props.aw,
 			height: this.props.ah,
-			borderWidth: isNaN(scale) || !isFinite(scale) ? 0 : scale,
+			borderWidth: isNaN(antiScale) || !isFinite(antiScale) ? 0 : antiScale,
 		}
 
 		const controls = []
@@ -223,10 +223,6 @@ class Window extends React.Component {
 			controls.push(<div key='x' className={classes.resizeSW} onMouseDown={this.onResizeSW} />)
 			controls.push(<div key='j' className={classes.resizeW} onMouseDown={this.onResizeW} />)
 		}
-		if (this.props.title)
-			controls.push(<div key='u' className={classes.title} style={{
-				transform: 'scale('+scale+','+scale+')'
-			}}>{this.props.title}</div>)
 
 		if (this.props.style) {
 			let propStyle = {}
@@ -240,7 +236,15 @@ class Window extends React.Component {
 			onMouseUp={this.onMouseUp} onDragOver={this.onDragOver}
 			tabIndex={this.props.tabIndex} onFocus={this.onFocus}
 			onKeyUp={this.props.onKeyUp}>
-			{controls}{this.props.children}
+			{controls}
+			<div style={{
+				transformOrigin: 'top left',
+				transform: `scale(${antiScale},${antiScale})`,
+				width: `calc(100% * ${scale})`,
+				height: `calc(100% * ${scale})`,
+			}}>
+				{this.props.children}
+			</div>
 		</div>
 	}
 }
@@ -451,7 +455,13 @@ class WindowsComponent extends React.Component {
 	}
 
 	componentDidMount() {
+		window.addEventListener('resize', this.reset)
+
 		this.setState({initRender: true})
+	}
+
+	componentWillUnmount() {
+		window.removeEventListener('resize', this.reset)
 	}
 
 	componentDidUpdate() {
@@ -507,11 +517,11 @@ class WindowsComponent extends React.Component {
 		const { classes, width, height } = this.props
 
 		const scale = this.scale()
-
 		const antiScale = 1 / scale
 		const children = React.Children.map(this.props.children, child =>
       React.cloneElement(child, {
-				classes: classes, onEvent: this.onEvent, scale: antiScale,
+				classes: classes, onEvent: this.onEvent,
+				scale: scale, antiScale: antiScale,
 				x: child.props.x, y: child.props.y,
 				w: child.props.w, h: child.props.h,
 				ax: Compute.computeActualLength(child.props.x, width),

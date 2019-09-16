@@ -14,7 +14,11 @@ export default Interactive = () => {
     const win = windows[id]
     const current = id === focus
     children.push(<Window key={id} x={win.x} y={win.y} w={win.w} h={win.h}
-      tabIndex={id} movable={current} resizable={current}>{id}</Window>)
+      tabIndex={id} movable={current} resizable={current}>
+      <div style={{background: 'gray'}}>
+        {id}
+      </div>
+    </Window>)
   }
 
   return <Windows style={{width: 480, height: 270, border: '1px solid gray'}}
@@ -22,7 +26,7 @@ export default Interactive = () => {
     movable scalable
     onFocus={({key}) => {setFocus(key)}}
     onBlur={() => {setFocus(null)}}
-    onChange={({key, x, y, w, h}) => {
+    onWindowChange={({key, x, y, w, h}) => {
       const newWindows = {...windows}
       for (const id in windows)
         if (id === key) newWindows[id] = {x: x, y: y, w: w, h: h}

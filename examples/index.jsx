@@ -1,9 +1,9 @@
 import React from 'react'
 import ReactDOM from 'react-dom'
 
-const Basic = React.lazy(() => import('./basic.jsx'))
-const Interactive = React.lazy(() => import('./interactive.jsx'))
-const Minimap = React.lazy(() => import('./minimap.jsx'))
+import Basic from './basic.jsx'
+import Interactive from './interactive.jsx'
+import Minimap from './minimap.jsx'
 
 const Examples = () => {
   const [tab, setTab] = React.useState('basic')
